@@ -27,13 +27,23 @@
   flex-grow: 1;
 }
 
+.Album:first-child {
+  margin-top: 16px;
+}
+
+.Album:last-child {
+  margin-bottom: 16px;
+}
+
 .Album {
   padding: 4px;
   margin: 16px;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .AlbumTitleContainer {
-  background-color: #fe8019;
+  background-color: #458588;
   color: #282828;
   padding: 8px;
   border-radius: 8px 8px 0px 0px;
@@ -55,7 +65,7 @@
   flex-direction: row;
   box-sizing: border-box;
   padding: 6px;
-  background-color: #ebdbb2;
+  background-color: #d5c4a1;
   color: #282828;
   border: 2px solid transparent;
   cursor: pointer;
@@ -66,12 +76,12 @@
 }
 
 .AlbumTrackPlaying {
-  background-color: #8ec07c;
+  background-color: #fbf1c7;
   border: 2px solid #8ec07c;
 }
 
 .AlbumTrack:hover {
-  background-color: #fbf1c7;
+  background-color: #ebdbb2;
 }
 
 .TrackNumber {
@@ -109,7 +119,7 @@
 .TransportButton {
   box-sizing: border-box;
   background-color: #ebdbb2;
-  border: 1px solid #d65d0e;
+  border: 1px solid #458588;
   padding-left: 16px;
   padding-right: 16px;
   padding-top: 4px;
@@ -132,25 +142,6 @@
   flex-direction: row;
 }
 
-.TransportSeekBarContainer {
-  display: flex;
-  flex: 1;
-  height: 16px;
-  border: 1px solid #d65d0e;
-  margin-left: 8px;
-  margin-right: 8px;
-  margin-bottom: 4px;
-  padding: 2px;
-  border-radius: 4px;
-}
-
-.TransportSeekBar {
-  height: 100%;
-  width: 100%;
-  background-color: #d65d0e;
-  border-radius: 4px;
-}
-
 .TransportButton:hover {
   background-color: #fbf1c7;
 }
@@ -162,4 +153,23 @@
 
 .TransportDuration {
   font-family: "monospace";
+}
+
+.SeekBarContainer {
+  display: flex;
+  flex: 1;
+  height: 16px;
+  border: 1px solid #458588;
+  margin-left: 8px;
+  margin-right: 8px;
+  margin-bottom: 4px;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.SeekBar {
+  height: 100%;
+  width: 100%;
+  background-color: #458588;
+  border-radius: 4px;
 }

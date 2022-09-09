@@ -20,6 +20,11 @@ interface TransportButtonProps {
   caption: string;
 }
 
+interface SeekBarProps {
+  percent: number;
+  onChange?: (percent: number) => void;
+}
+
 const formatDuration = (seconds: number) => {
   if (!seconds) {
     return "0:00";
@@ -27,6 +32,20 @@ const formatDuration = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
   const secs = seconds - mins * 60;
   return `${Math.round(mins)}:${Math.round(secs).toString().padStart(2, "0")}`;
+};
+
+const SeekBar: Component<SeekBarProps> = (props) => {
+  const handleClick = (ev: any) => {
+    const percent = Math.round(
+      (ev.offsetX / ev.currentTarget.clientWidth) * 100
+    );
+    props.onChange?.(percent);
+  };
+  return (
+    <div onClick={handleClick} class={styles.SeekBarContainer}>
+      <div class={styles.SeekBar} style={{ width: `${props.percent}%` }} />
+    </div>
+  );
 };
 
 const TrackView: Component<TrackViewProps> = (props) => {
@@ -70,7 +89,7 @@ const TransportView: Component = () => {
   const playhead = () => {
     const pos = playbackContext?.position() ?? 0;
     const dur = playbackContext?.duration() ?? 0;
-    return `${dur === 0 ? 0 : (pos / dur) * 100}%`;
+    return dur === 0 ? 0 : (pos / dur) * 100;
   };
   const playPauseCaption = () => {
     const state = playbackContext?.state() || PlaybackState.Stopped;
@@ -99,6 +118,13 @@ const TransportView: Component = () => {
   const handleNext = () => {
     playbackContext?.next();
   };
+  const handleTimeSeek = (percent: number) => {
+    const dur = playbackContext?.duration() ?? 0;
+    if (dur) {
+      const pos = dur * (percent / 100);
+      playbackContext?.seekTo(pos);
+    }
+  };
   return (
     <div class={styles.Transport}>
       <div class={styles.TransportTrackTitle}>
@@ -108,9 +134,7 @@ const TransportView: Component = () => {
         <div class={styles.TransportDuration}>{`${formatDuration(
           playbackContext?.position() ?? 0
         )}`}</div>
-        <div class={styles.TransportSeekBarContainer}>
-          <div class={styles.TransportSeekBar} style={{ width: playhead() }} />
-        </div>
+        <SeekBar percent={playhead()} onChange={handleTimeSeek} />
         <div class={styles.TransportDuration}>{`${formatDuration(
           playbackContext?.duration() ?? 0
         )}`}</div>

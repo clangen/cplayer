@@ -72,6 +72,10 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
     }
   };
 
+  const seekTo = (seconds: number) => {
+    player.fastSeek ? player.fastSeek(seconds) : (player.currentTime = seconds);
+  };
+
   const service: Playback = {
     state,
     current,
@@ -79,6 +83,7 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
     duration,
     volume,
     play,
+    seekTo,
     pause,
     resume,
     next,

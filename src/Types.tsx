@@ -31,6 +31,7 @@ export interface Playback {
   position: Accessor<number>;
   volume: Accessor<number>;
   play: (album: Album, index: number) => void;
+  seekTo: (seconds: number) => void;
   pause: () => void;
   resume: () => void;
   next: () => void;
