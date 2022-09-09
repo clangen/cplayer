@@ -50,7 +50,7 @@ const TrackView: Component<TrackViewProps> = (props) => {
       <div>
         <div class={styles.TrackTitle}>{props.track.title}</div>
         <a class={styles.TrackUri} href={props.track.uri}>
-          {props.track.uri}
+          download
         </a>
       </div>
     </div>
