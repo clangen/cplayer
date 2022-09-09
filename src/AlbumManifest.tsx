@@ -4,7 +4,7 @@ const Hustle = {
   tracks: [
     {
       title: "crosstown throwdown",
-      uri: "/src/assets/albums/the_beachside_hustle/01_-_crosstown_throwdown.opus",
+      uri: "/src/assets/albums/the_beachside_hustle/01-crosstown_throwdown.opus",
     },
     {
       title: "oleander",
@@ -31,7 +31,7 @@ const Disaster = {
   tracks: [
     {
       title: "rise and shine",
-      uri: "/src/assets/albums/immediate_disaster/01_-_rise_and_shine.opus",
+      uri: "/src/assets/albums/immediate_disaster/01-rise_and_shine.opus",
     },
     {
       title: "listless days",

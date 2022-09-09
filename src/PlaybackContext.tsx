@@ -98,6 +98,9 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
       setPosition(player.currentTime);
       setVolume(player.volume);
     });
+    player.addEventListener("ended", () => {
+      next();
+    });
   });
 
   return (
