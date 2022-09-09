@@ -1,4 +1,5 @@
 .App {
+  user-select: none;
   position: absolute;
   left: 0;
   right: 0;
@@ -55,6 +56,7 @@
 
 .AlbumTrackPlaying {
   background-color: #8ec07c;
+  border: 2px solid #8ec07c;
 }
 
 .AlbumTrack:hover {
@@ -84,7 +86,7 @@
 }
 
 .Transport {
-  background-color: #b8bb26;
+  background-color: #8ec07c;
   border-radius: 8px;
   color: #282828;
   padding: 8px;

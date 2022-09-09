@@ -31,6 +31,7 @@ export interface Playback {
   volume: Accessor<number>;
   play: (album: Album, index: number) => void;
   pause: () => void;
+  resume: () => void;
   next: () => void;
   prev: () => void;
   stop: () => void;

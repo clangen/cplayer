@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { createContext, Component, createSignal, onMount } from "solid-js";
 import { Playback, PlaybackState, Album, CurrentTrack } from "./Types";
 
@@ -39,11 +40,36 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
   };
 
   const next = () => {
-    stop();
+    const playing = current();
+    if (playing) {
+      const album = playing.album;
+      const nextIndex = playing.index + 1;
+      if (nextIndex < playing.album.tracks.length) {
+        play(album, nextIndex);
+      }
+    }
   };
 
   const prev = () => {
-    stop();
+    const playing = current();
+    if (playing) {
+      if (player.currentTime > 4.0) {
+        play(playing.album, playing.index);
+      } else {
+        const album = playing.album;
+        const preIndex = playing.index - 1;
+        if (preIndex >= 0) {
+          play(album, preIndex);
+        }
+      }
+    }
+  };
+
+  const resume = () => {
+    if (state() !== PlaybackState.Stopped) {
+      player.play();
+      setState(PlaybackState.Playing);
+    }
   };
 
   const service: Playback = {
@@ -54,6 +80,7 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
     volume,
     play,
     pause,
+    resume,
     next,
     prev,
     stop,

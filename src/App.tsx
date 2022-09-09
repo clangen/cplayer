@@ -72,10 +72,26 @@ const TransportView: Component = () => {
     const dur = playbackContext?.duration() ?? 0;
     return `${dur === 0 ? 0 : (pos / dur) * 100}%`;
   };
-  const playPauseCaption = () =>
-    playbackContext?.state() === PlaybackState.Stopped ? "play" : "pause";
+  const playPauseCaption = () => {
+    const state = playbackContext?.state() || PlaybackState.Stopped;
+    if (state === PlaybackState.Paused) {
+      return "unpause";
+    }
+    return state === PlaybackState.Stopped ? "play" : "pause";
+  };
   const handlePlayPause = () => {
-    playbackContext?.stop();
+    const state = playbackContext?.state() || PlaybackState.Stopped;
+    switch (state) {
+      case PlaybackState.Stopped:
+        playbackContext?.play(ALBUMS[0], 0);
+        break;
+      case PlaybackState.Playing:
+        playbackContext?.pause();
+        break;
+      case PlaybackState.Paused:
+        playbackContext?.resume();
+        break;
+    }
   };
   const handlePrev = () => {
     playbackContext?.prev();
