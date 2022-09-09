@@ -31,7 +31,6 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
     setPosition(0);
     player.src = track.uri;
     player.play();
-    console.log(player);
   };
 
   const pause = () => {
@@ -70,7 +69,6 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
     player.addEventListener("timeupdate", () => {
       setDuration(player.duration);
       setPosition(player.currentTime);
-      console.log(position());
       setVolume(player.volume);
     });
   });

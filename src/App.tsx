@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Accessor, Component, useContext } from "solid-js";
+import { Component, useContext } from "solid-js";
 import ALBUMS from "./Albums";
 import { Track, Album, PlaybackState } from "./Types";
 import { PlaybackContext } from "./PlaybackContext";
@@ -14,6 +14,20 @@ interface TrackViewProps {
 interface AlbumViewProps {
   album: Album;
 }
+
+interface TransportButtonProps {
+  onClick: () => void;
+  caption: string;
+}
+
+const formatDuration = (seconds: number) => {
+  if (!seconds) {
+    return "0:00";
+  }
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds - mins * 60;
+  return `${Math.round(mins)}:${Math.round(secs).toString().padStart(2, "0")}`;
+};
 
 const TrackView: Component<TrackViewProps> = (props) => {
   const playbackContext = useContext(PlaybackContext);
@@ -43,60 +57,55 @@ const TrackView: Component<TrackViewProps> = (props) => {
   );
 };
 
-const TransportPrevButton: Component = () => (
-  <div
-    onClick={() => {
-      const playbackContext = useContext(PlaybackContext);
-      playbackContext?.prev();
-    }}
-    class={styles.TransportButton}
-  >
-    prev
-  </div>
-);
-
-const TransportNextButton: Component = () => (
-  <div
-    onClick={() => {
-      const playbackContext = useContext(PlaybackContext);
-      playbackContext?.prev();
-    }}
-    class={styles.TransportButton}
-  >
-    next
-  </div>
-);
-
-const TransportPlayButton: Component = () => {
-  const playbackContext = useContext(PlaybackContext);
+const TransportButton: Component<TransportButtonProps> = (props) => {
   return (
-    <div
-      onClick={() => {
-        playbackContext?.stop();
-      }}
-      class={styles.TransportButton}
-    >
-      {playbackContext?.state() === PlaybackState.Stopped ? "play" : "pause"}
+    <div onClick={props.onClick} class={styles.TransportButton}>
+      {props.caption}
     </div>
   );
 };
 
 const TransportView: Component = () => {
   const playbackContext = useContext(PlaybackContext);
+  const playhead = () => {
+    const pos = playbackContext?.position() ?? 0;
+    const dur = playbackContext?.duration() ?? 0;
+    return `${dur === 0 ? 0 : (pos / dur) * 100}%`;
+  };
+  const playPauseCaption = () =>
+    playbackContext?.state() === PlaybackState.Stopped ? "play" : "pause";
+  const handlePlayPause = () => {
+    playbackContext?.stop();
+  };
+  const handlePrev = () => {
+    playbackContext?.prev();
+  };
+  const handleNext = () => {
+    playbackContext?.next();
+  };
   return (
     <div class={styles.Transport}>
       <div class={styles.TransportTrackTitle}>
         {playbackContext?.current()?.track.title ?? "not playing"}
       </div>
       <div class={styles.TransportTimeContainer}>
-        <div>{` pos: ${playbackContext?.position() ?? 0}`}</div>
-        <div class={styles.TransportSeekBar} />
-        <div>{` dur: ${playbackContext?.duration() ?? 0}`}</div>
+        <div class={styles.TransportDuration}>{`${formatDuration(
+          playbackContext?.position() ?? 0
+        )}`}</div>
+        <div class={styles.TransportSeekBarContainer}>
+          <div class={styles.TransportSeekBar} style={{ width: playhead() }} />
+        </div>
+        <div class={styles.TransportDuration}>{`${formatDuration(
+          playbackContext?.duration() ?? 0
+        )}`}</div>
       </div>
       <div class={styles.TransportButtonContainer}>
-        <TransportPrevButton />
-        <TransportPlayButton />
-        <TransportNextButton />
+        <TransportButton onClick={handlePrev} caption="prev" />
+        <TransportButton
+          onClick={handlePlayPause}
+          caption={playPauseCaption()}
+        />
+        <TransportButton onClick={handleNext} caption="next" />
       </div>
     </div>
   );

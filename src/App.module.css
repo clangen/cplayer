@@ -46,6 +46,7 @@
   background-color: #ebdbb2;
   color: #282828;
   border: 2px solid transparent;
+  cursor: pointer;
 }
 
 .AlbumTrack:last-child {
@@ -57,7 +58,7 @@
 }
 
 .AlbumTrack:hover {
-  background-color: #83a598;
+  background-color: #fbf1c7;
 }
 
 .TrackNumber {
@@ -95,13 +96,14 @@
 .TransportButton {
   box-sizing: border-box;
   background-color: #ebdbb2;
-  border: 2px solid #fe8019;
+  border: 1px solid #d65d0e;
   padding-left: 16px;
   padding-right: 16px;
   padding-top: 4px;
   padding-bottom: 4px;
   border-radius: 4px;
-  margin-right: 8px
+  margin-right: 8px;
+  cursor: pointer;
 }
 
 .TransportTimeContainer {
@@ -117,21 +119,34 @@
   flex-direction: row;
 }
 
-.TransportSeekBar {
+.TransportSeekBarContainer {
   display: flex;
   flex: 1;
-  height: 24px;
-  border: 1px solid red;
+  height: 16px;
+  border: 1px solid #d65d0e;
   margin-left: 8px;
   margin-right: 8px;
   margin-bottom: 4px;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.TransportSeekBar {
+  height: 100%;
+  width: 100%;
+  background-color: #d65d0e;
+  border-radius: 4px;
 }
 
 .TransportButton:hover {
-  background-color: #83a598;
+  background-color: #fbf1c7;
 }
 
 .TransportTrackTitle {
   font-weight: bold;
   margin-bottom: 4px;
+}
+
+.TransportDuration {
+  font-family: "monospace";
 }
