@@ -31,12 +31,22 @@
   width: 680px;
 }
 
-.AlbumTitle {
+.AlbumTitleContainer {
   background-color: #fe8019;
   color: #282828;
   padding: 8px;
   border-radius: 8px 8px 0px 0px;
+  flex-direction: row;
+  display: flex;
+}
+
+.AlbumTitle {
+  display: flex;
   font-weight: bold;
+}
+
+.AlbumTitleContainer div {
+  margin-right: 4px;
 }
 
 .AlbumTrack {

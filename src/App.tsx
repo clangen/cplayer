@@ -130,7 +130,11 @@ const TransportView: Component = () => {
 const AlbumView: Component<AlbumViewProps> = (props) => {
   return (
     <div class={styles.Album}>
-      <div class={styles.AlbumTitle}>{props.album.name}</div>
+      <div class={styles.AlbumTitleContainer}>
+        <div class={styles.AlbumTitle}>{props.album.name}</div>
+        <div>by</div>
+        <div class={styles.AlbumTitle}>{props.album.artist}</div>
+      </div>
       <div>
         {_.map(props.album.tracks, (track, index) => (
           <TrackView album={props.album} track={track} index={index} />
