@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { Component, useContext } from "solid-js";
-import ALBUMS from "./Albums";
+import AlbumManifest from "./AlbumManifest";
 import { Track, Album, PlaybackState } from "./Types";
 import { PlaybackContext } from "./PlaybackContext";
 import styles from "./App.module.css";
@@ -83,7 +83,7 @@ const TransportView: Component = () => {
     const state = playbackContext?.state() || PlaybackState.Stopped;
     switch (state) {
       case PlaybackState.Stopped:
-        playbackContext?.play(ALBUMS[0], 0);
+        playbackContext?.play(AlbumManifest[0], 0);
         break;
       case PlaybackState.Playing:
         playbackContext?.pause();
@@ -145,7 +145,7 @@ const App: Component = () => {
     <div class={styles.App}>
       <div class={styles.MainContent}>
         <div class={styles.AlbumList}>
-          {_.map(ALBUMS, (album) => (
+          {_.map(AlbumManifest, (album) => (
             <AlbumView album={album} />
           ))}
         </div>

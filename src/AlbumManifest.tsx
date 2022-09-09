@@ -1,5 +1,6 @@
 const Hustle = {
   name: "the beachside hustle",
+  artist: "suncrash",
   tracks: [
     {
       title: "crosstown throwdown",
@@ -26,6 +27,7 @@ const Hustle = {
 
 const Disaster = {
   name: "immediate disaster",
+  artist: "suncrash",
   tracks: [
     {
       title: "rise and shine",
