@@ -147,8 +147,22 @@
 }
 
 .TransportTrackTitle {
-  font-weight: bold;
   margin-bottom: 4px;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.TransportTrackTitle div {
+  margin-right: 4px;
+}
+
+.TransportTrackSeparator {
+  font-size: 75%;
+}
+
+.TransportTrackMetadata {
+  font-weight: bold;
 }
 
 .TransportDuration {

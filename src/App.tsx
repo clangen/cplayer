@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Component, useContext } from "solid-js";
+import { Component, Show, useContext } from "solid-js";
 import AlbumManifest from "./AlbumManifest";
 import { Track, Album, PlaybackState } from "./Types";
 import { PlaybackContext } from "./PlaybackContext";
@@ -84,6 +84,35 @@ const TransportButton: Component<TransportButtonProps> = (props) => {
   );
 };
 
+const TransportTitle: Component = () => {
+  const playbackContext = useContext(PlaybackContext);
+  const state = () => playbackContext?.state() ?? PlaybackState.Stopped;
+  const title = () => playbackContext?.current()?.track.title ?? "[unknown]";
+  const album = () => playbackContext?.current()?.album.name ?? "[unknown]";
+  const artist = () => playbackContext?.current()?.album.artist ?? "[uknown]";
+  const stopped = () => state() === PlaybackState.Stopped;
+  const buffering = () => state() === PlaybackState.Buffering;
+  const active = () => !stopped() && !buffering();
+  return (
+    <div class={styles.TransportTrackTitle}>
+      <Show when={stopped()}>
+        <div>not playing</div>
+      </Show>
+      <Show when={buffering()}>
+        <div>buffering...</div>
+      </Show>
+      <Show when={active()}>
+        <div class={styles.TransportTrackSeparator}>now playing</div>
+        <div class={styles.TransportTrackMetadata}>{title()}</div>
+        <div class={styles.TransportTrackSeparator}>by</div>
+        <div class={styles.TransportTrackMetadata}>{artist()}</div>
+        <div class={styles.TransportTrackSeparator}>from</div>
+        <div class={styles.TransportTrackMetadata}>{album()}</div>
+      </Show>
+    </div>
+  );
+};
+
 const TransportView: Component = () => {
   const playbackContext = useContext(PlaybackContext);
   const playhead = () => {
@@ -127,9 +156,7 @@ const TransportView: Component = () => {
   };
   return (
     <div class={styles.Transport}>
-      <div class={styles.TransportTrackTitle}>
-        {playbackContext?.current()?.track.title ?? "not playing"}
-      </div>
+      <TransportTitle />
       <div class={styles.TransportTimeContainer}>
         <div class={styles.TransportDuration}>{`${formatDuration(
           playbackContext?.position() ?? 0
