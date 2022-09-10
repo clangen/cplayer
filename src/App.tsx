@@ -31,7 +31,7 @@ const formatDuration = (seconds: number) => {
   }
   const mins = Math.floor(seconds / 60);
   const secs = seconds - mins * 60;
-  return `${Math.round(mins)}:${Math.round(secs).toString().padStart(2, "0")}`;
+  return `${Math.floor(mins)}:${Math.floor(secs).toString().padStart(2, "0")}`;
 };
 
 const SeekBar: Component<SeekBarProps> = (props) => {
