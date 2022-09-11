@@ -1,8 +1,8 @@
 import _ from "lodash";
 import { Component, Show, useContext } from "solid-js";
-import AlbumManifest from "./AlbumManifest";
 import { Track, Album, PlaybackState } from "./Types";
 import { PlaybackContext } from "./PlaybackContext";
+import { AlbumManifestContext } from "./AlbumManifestContext";
 import styles from "./App.module.css";
 
 interface TrackViewProps {
@@ -114,6 +114,8 @@ const TransportTitle: Component = () => {
 };
 
 const TransportView: Component = () => {
+  const albumManifestContext = useContext(AlbumManifestContext);
+  const albums = () => albumManifestContext?.albums() || [];
   const playbackContext = useContext(PlaybackContext);
   const playhead = () => {
     const pos = playbackContext?.position() ?? 0;
@@ -131,7 +133,7 @@ const TransportView: Component = () => {
     const state = playbackContext?.state() || PlaybackState.Stopped;
     switch (state) {
       case PlaybackState.Stopped:
-        playbackContext?.play(AlbumManifest[0], 0);
+        playbackContext?.play(albums()[0], 0);
         break;
       case PlaybackState.Playing:
         playbackContext?.pause();
@@ -196,17 +198,21 @@ const AlbumView: Component<AlbumViewProps> = (props) => {
 };
 
 const App: Component = () => {
+  const albumManifestContext = useContext(AlbumManifestContext);
+  const manifestLoaded = () => albumManifestContext?.albums().length;
   return (
-    <div class={styles.App}>
-      <div class={styles.MainContent}>
-        <div class={styles.AlbumList}>
-          {_.map(AlbumManifest, (album) => (
-            <AlbumView album={album} />
-          ))}
+    <Show when={manifestLoaded()}>
+      <div class={styles.App}>
+        <div class={styles.MainContent}>
+          <div class={styles.AlbumList}>
+            {_.map(albumManifestContext?.albums(), (album) => (
+              <AlbumView album={album} />
+            ))}
+          </div>
+          <TransportView />
         </div>
-        <TransportView />
       </div>
-    </div>
+    </Show>
   );
 };
 

@@ -1,0 +1,20 @@
+[
+  {
+    "name": "album name",
+    "artist": "album's artist name",
+    "tracks": [
+      {
+        "title": "track title 1",
+        "uri": "relative/path/to/track1.opus"
+      },
+      {
+        "title": "track title 2",
+        "uri": "relative/path/to/track2.ogg"
+      },
+      {
+        "title": "track title 3",
+        "uri": "relative/path/to/track3.mp3"
+      },
+    ]
+  }
+]

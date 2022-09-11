@@ -38,3 +38,7 @@ export interface Playback {
   prev: () => void;
   stop: () => void;
 }
+
+export interface AlbumManifest {
+  albums: Accessor<Album[]>;
+}

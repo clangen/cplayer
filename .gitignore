@@ -1,4 +1,5 @@
 node_modules
 dist
 src/assets/albums
+src/assets/manifest.json
 **/.DS_Store
