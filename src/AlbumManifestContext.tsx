@@ -23,7 +23,6 @@ export const AlbumManifestProvider: Component<AlbumManifestProviderProps> = (
         track.uri = `${PATH_PREFIX}/${track.uri}`;
       });
     });
-    console.log(albumManifest);
     setAlbums(albumManifest);
     setManifest({ albums });
   });
