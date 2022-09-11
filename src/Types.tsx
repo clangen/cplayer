@@ -39,7 +39,7 @@ export interface Playback {
   stop: () => void;
 }
 
-export interface AlbumManifest {
+export interface Manifest {
   albums: Accessor<Album[]>;
   config: Accessor<Record<string, any>>;
 }

@@ -3,15 +3,15 @@ import { render } from "solid-js/web";
 import "./index.css";
 import App from "./App";
 import { PlaybackProvider } from "./PlaybackContext";
-import { AlbumManifestProvider } from "./AlbumManifestContext";
+import { ManifestProvider } from "./ManifestContext";
 
 render(
   () => (
-    <AlbumManifestProvider>
+    <ManifestProvider>
       <PlaybackProvider>
         <App />
       </PlaybackProvider>
-    </AlbumManifestProvider>
+    </ManifestProvider>
   ),
   document.getElementById("root") as HTMLElement
 );
