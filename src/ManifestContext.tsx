@@ -20,11 +20,13 @@ export const ManifestProvider: Component<ManifestProviderProps> = (props) => {
   });
   fetch(MANIFEST_URI).then(async (response) => {
     const manifest = await response.json();
-    _.each(manifest.albums, (album) => {
-      _.each(album.tracks, (track) => {
-        track.uri = `${PATH_PREFIX}/${track.uri}`;
+    if (!manifest.config.absoluteTrackUris) {
+      _.each(manifest.albums, (album) => {
+        _.each(album.tracks, (track) => {
+          track.uri = `${PATH_PREFIX}/${track.uri}`;
+        });
       });
-    });
+    }
     setConfig(manifest.config);
     setAlbums(manifest.albums);
     setManifest({ albums, config });

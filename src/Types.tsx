@@ -27,6 +27,7 @@ export interface CurrentTrack {
 export interface Config {
   pageTitle?: string;
   hideDownloadButton?: boolean;
+  absoluteTrackUris?: boolean;
 }
 
 export interface Playback {
