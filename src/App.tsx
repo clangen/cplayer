@@ -1,6 +1,13 @@
 import _ from "lodash";
-import { Component, Show, useContext, createEffect } from "solid-js";
-import { Track, Album, PlaybackState } from "./Types";
+import {
+  Component,
+  Show,
+  useContext,
+  createEffect,
+  onMount,
+  onCleanup,
+} from "solid-js";
+import { Track, Album, Playback, Manifest, PlaybackState } from "./Types";
 import { PlaybackContext } from "./PlaybackContext";
 import { ManifestContext } from "./ManifestContext";
 import styles from "./App.module.css";
@@ -41,6 +48,32 @@ const handleConfigChanged = (config: Record<string, any>) => {
   }
 };
 
+const handleDocumentKeyPress = (
+  ev: any,
+  manifest: Manifest,
+  playback: Playback
+) => {
+  if (ev.charCode === 32) {
+    switch (playback?.state() ?? PlaybackState.Stopped) {
+      case PlaybackState.Stopped: {
+        const albums = manifest?.albums() || [];
+        if (albums.length) {
+          playback?.play(albums[0], 0);
+        }
+        break;
+      }
+      case PlaybackState.Paused: {
+        playback?.resume();
+        break;
+      }
+      default: {
+        playback?.pause();
+        break;
+      }
+    }
+  }
+};
+
 const SeekBar: Component<SeekBarProps> = (props) => {
   const handleClick = (ev: any) => {
     const percent = Math.round(
@@ -56,24 +89,24 @@ const SeekBar: Component<SeekBarProps> = (props) => {
 };
 
 const TrackView: Component<TrackViewProps> = (props) => {
-  const playbackContext = useContext(PlaybackContext);
-  const manifestContext = useContext(ManifestContext);
+  const playback = useContext(PlaybackContext);
+  const manifest = useContext(ManifestContext);
 
   const showDownloadButton = () => {
-    if (!_.isNil(manifestContext?.config().hideDownloadButton)) {
-      return !manifestContext?.config().hideDownloadButton;
+    if (!_.isNil(manifest?.config().hideDownloadButton)) {
+      return !manifest?.config().hideDownloadButton;
     }
     return false;
   };
 
   const style = () =>
-    playbackContext?.current()?.index === props.index &&
-    playbackContext?.current()?.album.name === props.album.name
+    playback?.current()?.index === props.index &&
+    playback?.current()?.album.name === props.album.name
       ? styles.AlbumTrackPlaying
       : "";
 
   const handleClick = () => {
-    playbackContext?.play(props.album, props.index);
+    playback?.play(props.album, props.index);
   };
 
   return (
@@ -102,11 +135,11 @@ const TransportButton: Component<TransportButtonProps> = (props) => {
 };
 
 const TransportTitle: Component = () => {
-  const playbackContext = useContext(PlaybackContext);
-  const state = () => playbackContext?.state() ?? PlaybackState.Stopped;
-  const title = () => playbackContext?.current()?.track.title ?? "[unknown]";
-  const album = () => playbackContext?.current()?.album.name ?? "[unknown]";
-  const artist = () => playbackContext?.current()?.album.artist ?? "[uknown]";
+  const playback = useContext(PlaybackContext);
+  const state = () => playback?.state() ?? PlaybackState.Stopped;
+  const title = () => playback?.current()?.track.title ?? "[unknown]";
+  const album = () => playback?.current()?.album.name ?? "[unknown]";
+  const artist = () => playback?.current()?.album.artist ?? "[uknown]";
   const stopped = () => state() === PlaybackState.Stopped;
   const buffering = () => state() === PlaybackState.Buffering;
   const active = () => !stopped() && !buffering();
@@ -131,46 +164,46 @@ const TransportTitle: Component = () => {
 };
 
 const TransportView: Component = () => {
-  const manifestContext = useContext(ManifestContext);
-  const albums = () => manifestContext?.albums() || [];
-  const playbackContext = useContext(PlaybackContext);
+  const manifest = useContext(ManifestContext);
+  const albums = () => manifest?.albums() || [];
+  const playback = useContext(PlaybackContext);
   const playhead = () => {
-    const pos = playbackContext?.position() ?? 0;
-    const dur = playbackContext?.duration() ?? 0;
+    const pos = playback?.position() ?? 0;
+    const dur = playback?.duration() ?? 0;
     return dur === 0 ? 0 : (pos / dur) * 100;
   };
   const playPauseCaption = () => {
-    const state = playbackContext?.state() || PlaybackState.Stopped;
+    const state = playback?.state() || PlaybackState.Stopped;
     if (state === PlaybackState.Paused) {
       return "unpause";
     }
     return state === PlaybackState.Stopped ? "play" : "pause";
   };
   const handlePlayPause = () => {
-    const state = playbackContext?.state() || PlaybackState.Stopped;
+    const state = playback?.state() || PlaybackState.Stopped;
     switch (state) {
       case PlaybackState.Stopped:
-        playbackContext?.play(albums()[0], 0);
+        playback?.play(albums()[0], 0);
         break;
       case PlaybackState.Playing:
-        playbackContext?.pause();
+        playback?.pause();
         break;
       case PlaybackState.Paused:
-        playbackContext?.resume();
+        playback?.resume();
         break;
     }
   };
   const handlePrev = () => {
-    playbackContext?.prev();
+    playback?.prev();
   };
   const handleNext = () => {
-    playbackContext?.next();
+    playback?.next();
   };
   const handleTimeSeek = (percent: number) => {
-    const dur = playbackContext?.duration() ?? 0;
+    const dur = playback?.duration() ?? 0;
     if (dur) {
       const pos = dur * (percent / 100);
-      playbackContext?.seekTo(pos);
+      playback?.seekTo(pos);
     }
   };
   return (
@@ -178,11 +211,11 @@ const TransportView: Component = () => {
       <TransportTitle />
       <div class={styles.TransportTimeContainer}>
         <div class={styles.TransportDuration}>{`${formatDuration(
-          playbackContext?.position() ?? 0
+          playback?.position() ?? 0
         )}`}</div>
         <SeekBar percent={playhead()} onChange={handleTimeSeek} />
         <div class={styles.TransportDuration}>{`${formatDuration(
-          playbackContext?.duration() ?? 0
+          playback?.duration() ?? 0
         )}`}</div>
       </div>
       <div class={styles.TransportButtonContainer}>
@@ -215,17 +248,28 @@ const AlbumView: Component<AlbumViewProps> = (props) => {
 };
 
 const App: Component = () => {
-  const manifestContext = useContext(ManifestContext);
-  const manifestLoaded = () => manifestContext?.albums().length;
+  const playback = useContext(PlaybackContext);
+  const manifest = useContext(ManifestContext);
+
+  const manifestLoaded = () => manifest?.albums().length;
+
+  const handleKeyPress = (ev: any) =>
+    handleDocumentKeyPress(ev, manifest!, playback!);
+
+  onMount(() => document.addEventListener("keypress", handleKeyPress));
+
+  onCleanup(() => document.removeEventListener("keypress", handleKeyPress));
+
   createEffect(() => {
-    handleConfigChanged(manifestContext?.config() ?? {});
-  }, [manifestContext?.config]);
+    handleConfigChanged(manifest?.config() ?? {});
+  }, [manifest?.config]);
+
   return (
     <Show when={manifestLoaded()}>
       <div class={styles.App}>
         <div class={styles.MainContent}>
           <div class={styles.AlbumList}>
-            {_.map(manifestContext?.albums(), (album) => (
+            {_.map(manifest?.albums(), (album) => (
               <AlbumView album={album} />
             ))}
           </div>
