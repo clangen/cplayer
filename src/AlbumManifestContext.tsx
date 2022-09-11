@@ -14,17 +14,22 @@ interface AlbumManifestProviderProps {
 export const AlbumManifestProvider: Component<AlbumManifestProviderProps> = (
   props
 ) => {
+  const [config, setConfig] = createSignal<Record<string, any>>({});
   const [albums, setAlbums] = createSignal<Album[]>([]);
-  const [manifest, setManifest] = createSignal<AlbumManifest>({ albums });
+  const [manifest, setManifest] = createSignal<AlbumManifest>({
+    albums,
+    config,
+  });
   fetch(MANIFEST_URI).then(async (response) => {
     const albumManifest = await response.json();
-    _.each(albumManifest, (album) => {
+    _.each(albumManifest.albums, (album) => {
       _.each(album.tracks, (track) => {
         track.uri = `${PATH_PREFIX}/${track.uri}`;
       });
     });
-    setAlbums(albumManifest);
-    setManifest({ albums });
+    setConfig(albumManifest.config);
+    setAlbums(albumManifest.albums);
+    setManifest({ albums, config });
   });
   return (
     <AlbumManifestContext.Provider value={manifest()}>

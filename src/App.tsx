@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { Component, Show, useContext } from "solid-js";
+import { Component, Show, useContext, createEffect } from "solid-js";
 import { Track, Album, PlaybackState } from "./Types";
 import { PlaybackContext } from "./PlaybackContext";
 import { AlbumManifestContext } from "./AlbumManifestContext";
@@ -32,6 +32,13 @@ const formatDuration = (seconds: number) => {
   const mins = Math.floor(seconds / 60);
   const secs = seconds - mins * 60;
   return `${Math.floor(mins)}:${Math.floor(secs).toString().padStart(2, "0")}`;
+};
+
+const handleConfigChanged = (config: Record<string, any>) => {
+  const pageTitle = config.pageTitle;
+  if (pageTitle) {
+    document.title = pageTitle;
+  }
 };
 
 const SeekBar: Component<SeekBarProps> = (props) => {
@@ -200,6 +207,9 @@ const AlbumView: Component<AlbumViewProps> = (props) => {
 const App: Component = () => {
   const albumManifestContext = useContext(AlbumManifestContext);
   const manifestLoaded = () => albumManifestContext?.albums().length;
+  createEffect(() => {
+    handleConfigChanged(albumManifestContext?.config() ?? {});
+  }, [albumManifestContext?.config]);
   return (
     <Show when={manifestLoaded()}>
       <div class={styles.App}>

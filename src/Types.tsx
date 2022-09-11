@@ -41,4 +41,5 @@ export interface Playback {
 
 export interface AlbumManifest {
   albums: Accessor<Album[]>;
+  config: Accessor<Record<string, any>>;
 }
