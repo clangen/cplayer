@@ -57,6 +57,14 @@ const SeekBar: Component<SeekBarProps> = (props) => {
 
 const TrackView: Component<TrackViewProps> = (props) => {
   const playbackContext = useContext(PlaybackContext);
+  const manifestContext = useContext(ManifestContext);
+
+  const showDownloadButton = () => {
+    if (!_.isNil(manifestContext?.config().hideDownloadButton)) {
+      return !manifestContext?.config().hideDownloadButton;
+    }
+    return false;
+  };
 
   const style = () =>
     playbackContext?.current()?.index === props.index &&
@@ -75,9 +83,11 @@ const TrackView: Component<TrackViewProps> = (props) => {
       </div>
       <div>
         <div class={styles.TrackTitle}>{props.track.title}</div>
-        <a class={styles.TrackUri} href={props.track.uri}>
-          download
-        </a>
+        <Show when={showDownloadButton()}>
+          <a class={styles.TrackUri} href={props.track.uri}>
+            download
+          </a>
+        </Show>
       </div>
     </div>
   );

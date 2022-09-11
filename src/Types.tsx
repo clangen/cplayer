@@ -24,6 +24,11 @@ export interface CurrentTrack {
   index: number;
 }
 
+export interface Config {
+  pageTitle?: string;
+  hideDownloadButton?: boolean;
+}
+
 export interface Playback {
   state: Accessor<PlaybackState>;
   current: Accessor<CurrentTrack | undefined>;
@@ -41,5 +46,5 @@ export interface Playback {
 
 export interface Manifest {
   albums: Accessor<Album[]>;
-  config: Accessor<Record<string, any>>;
+  config: Accessor<Config>;
 }

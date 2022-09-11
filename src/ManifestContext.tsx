@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { createContext, Component, createSignal } from "solid-js";
-import { Manifest, Album } from "./Types";
+import { Manifest, Album, Config } from "./Types";
 
 const PATH_PREFIX = import.meta.env.DEV ? "/src/assets" : "./assets";
 const MANIFEST_URI = `${PATH_PREFIX}/manifest.json`;
@@ -12,7 +12,7 @@ interface ManifestProviderProps {
 }
 
 export const ManifestProvider: Component<ManifestProviderProps> = (props) => {
-  const [config, setConfig] = createSignal<Record<string, any>>({});
+  const [config, setConfig] = createSignal<Config>({});
   const [albums, setAlbums] = createSignal<Album[]>([]);
   const [manifest, setManifest] = createSignal<Manifest>({
     albums,
