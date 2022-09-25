@@ -1,5 +1,12 @@
 import _ from "lodash";
-import { createContext, Component, createSignal, onMount } from "solid-js";
+import {
+  createContext,
+  Component,
+  createSignal,
+  onMount,
+  useContext,
+} from "solid-js";
+import { ManifestContext } from "./ManifestContext";
 import { Playback, PlaybackState, Album, CurrentTrack } from "./Types";
 
 export const PlaybackContext = createContext<Playback>();
@@ -16,6 +23,20 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
   const [duration, setDuration] = createSignal(0);
   const [position, setPosition] = createSignal(0);
   const [volume, setVolume] = createSignal(0);
+  const manifest = useContext(ManifestContext);
+
+  const getAdjacentAlbum = (offset: number) => {
+    const currentAlbum = current()?.album.name;
+    let currentAlbumIndex = -1;
+    if (currentAlbum) {
+      currentAlbumIndex =
+        _.findIndex(
+          manifest?.albums() || [],
+          (el) => el.name === currentAlbum
+        ) + offset;
+    }
+    return currentAlbumIndex < 0 ? null : manifest?.albums()[currentAlbumIndex];
+  };
 
   const stop = () => {
     setCurrent(undefined);
@@ -34,6 +55,20 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
     player.play();
   };
 
+  const playPrevAlbum = () => {
+    const prevAlbum = getAdjacentAlbum(-1);
+    if (prevAlbum) {
+      play(prevAlbum, prevAlbum.tracks.length - 1);
+    }
+  };
+
+  const playNextAlbum = () => {
+    const nextAlbum = getAdjacentAlbum(1);
+    if (nextAlbum) {
+      play(nextAlbum, 0);
+    }
+  };
+
   const pause = () => {
     setState(PlaybackState.Paused);
     player.pause();
@@ -46,6 +81,8 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
       const nextIndex = playing.index + 1;
       if (nextIndex < playing.album.tracks.length) {
         play(album, nextIndex);
+      } else {
+        playNextAlbum();
       }
     }
   };
@@ -60,6 +97,8 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
         const preIndex = playing.index - 1;
         if (preIndex >= 0) {
           play(album, preIndex);
+        } else {
+          playPrevAlbum();
         }
       }
     }
