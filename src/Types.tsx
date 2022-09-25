@@ -18,6 +18,13 @@ export enum PlaybackState {
   Paused = "paused",
 }
 
+export enum ManifestState {
+  Loading = "loading",
+  Missing = "missing",
+  Invalid = "invalid",
+  Loaded = "loaded",
+}
+
 export interface CurrentTrack {
   album: Album;
   track: Track;
@@ -48,4 +55,5 @@ export interface Playback {
 export interface Manifest {
   albums: Accessor<Album[]>;
   config: Accessor<Config>;
+  state: Accessor<ManifestState>;
 }

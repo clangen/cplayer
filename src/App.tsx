@@ -7,7 +7,14 @@ import {
   onMount,
   onCleanup,
 } from "solid-js";
-import { Track, Album, Playback, Manifest, PlaybackState } from "./Types";
+import {
+  Track,
+  Album,
+  Playback,
+  Manifest,
+  PlaybackState,
+  ManifestState,
+} from "./Types";
 import { PlaybackContext } from "./PlaybackContext";
 import { ManifestContext } from "./ManifestContext";
 import styles from "./App.module.css";
@@ -251,7 +258,11 @@ const App: Component = () => {
   const playback = useContext(PlaybackContext);
   const manifest = useContext(ManifestContext);
 
-  const manifestLoaded = () => manifest?.albums().length;
+  const manifestError = () =>
+    manifest?.state() === ManifestState.Invalid ||
+    manifest?.state() === ManifestState.Missing;
+
+  const manifestLoaded = () => manifest?.state() === ManifestState.Loaded;
 
   const handleKeyPress = (ev: any) =>
     handleDocumentKeyPress(ev, manifest!, playback!);
@@ -265,8 +276,8 @@ const App: Component = () => {
   }, [manifest?.config]);
 
   return (
-    <Show when={manifestLoaded()}>
-      <div class={styles.App}>
+    <div class={styles.App}>
+      <Show when={manifestLoaded()}>
         <div class={styles.MainContent}>
           <div class={styles.AlbumList}>
             {_.map(manifest?.albums(), (album) => (
@@ -275,8 +286,11 @@ const App: Component = () => {
           </div>
           <TransportView />
         </div>
-      </div>
-    </Show>
+      </Show>
+      <Show when={manifestError()}>
+        <div>invalid, corrupted, or empty manifest file!</div>
+      </Show>
+    </div>
   );
 };
 
