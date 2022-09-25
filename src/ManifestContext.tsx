@@ -25,6 +25,7 @@ export const ManifestProvider: Component<ManifestProviderProps> = (props) => {
   const urlParams = new URLSearchParams(window.location.search);
   const updateManifest = () => setManifest({ albums, config, state });
   const manifestUri = urlParams.get("manifest") || DEFAULT_MANIFEST_URI;
+  const singleAlbum = urlParams.get("single_album");
   fetch(manifestUri)
     .then(async (response) => {
       const manifest = await response.json();
@@ -39,6 +40,12 @@ export const ManifestProvider: Component<ManifestProviderProps> = (props) => {
           }
         });
       });
+      if (singleAlbum) {
+        manifest.albums = _.filter(
+          manifest.albums,
+          (album) => album.name.toLowerCase() === singleAlbum.toLowerCase()
+        );
+      }
       setState(
         !manifest.albums.length ? ManifestState.Invalid : ManifestState.Loaded
       );
