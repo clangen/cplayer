@@ -31,6 +31,7 @@ export const ManifestProvider: Component<ManifestProviderProps> = (props) => {
       const manifest = await response.json();
       _.each(manifest.albums, (album) => {
         _.each(album.tracks, (track) => {
+          track.tags = track.tags || [];
           if (manifest.config.trackUris === "absolute") {
             track.uri = manifest.config.trackUriRoot
               ? `${manifest.config.trackUriRoot}/${track.uri}`

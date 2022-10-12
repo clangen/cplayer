@@ -100,6 +100,27 @@
 .TrackTitle {
   font-weight: bold;
   font-size: 90%;
+  flex: 1;
+}
+
+.TrackTitleRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.TrackTitleRow div {
+  margin-right: 4px;
+}
+
+.TrackTag {
+  font-size: 65%;
+  padding: 2px;
+  border-radius: 8px;
+  background-color: #fe8019;
+  border: 1px solid #d65d03;
+  text-align: center;
+  justify-items: center;
+  min-width: 32px;
 }
 
 .TrackUri {
@@ -190,4 +211,8 @@
   width: 100%;
   background-color: #458588;
   border-radius: 4px;
+}
+
+.Flex1 {
+  flex: 1;
 }

@@ -3,6 +3,7 @@ import { Accessor } from "solid-js";
 export interface Track {
   title: string;
   uri: string;
+  tags: string[];
 }
 
 export interface Album {

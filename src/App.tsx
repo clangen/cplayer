@@ -121,8 +121,13 @@ const TrackView: Component<TrackViewProps> = (props) => {
       <div class={styles.TrackNumber}>
         <div>{props.index + 1}</div>
       </div>
-      <div>
-        <div class={styles.TrackTitle}>{props.track.title}</div>
+      <div class={styles.Flex1}>
+        <div class={styles.TrackTitleRow}>
+          <div class={styles.TrackTitle}>{props.track.title}</div>
+          {props.track.tags.map((tag) => (
+            <div class={styles.TrackTag}>{tag}</div>
+          ))}
+        </div>
         <Show when={showDownloadButton()}>
           <a class={styles.TrackUri} href={props.track.uri}>
             download
