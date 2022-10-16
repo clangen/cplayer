@@ -29,9 +29,14 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
   const [current, setCurrent] = createSignal<CurrentTrack | undefined>();
   const [duration, setDuration] = createSignal(0);
   const [position, setPosition] = createSignal(0);
-  const [volume, setVolume] = createSignal(0);
+  const [volume, setVolumeInternal] = createSignal(1.0);
   const [repeatMode, setRepeatMode] = createSignal(RepeatMode.None);
   const manifest = useContext(ManifestContext);
+
+  const setVolume = (updatedVolume: number) => {
+    player.volume = updatedVolume;
+    setVolumeInternal(player.volume);
+  };
 
   const getAdjacentAlbum = (offset: number) => {
     const currentAlbum = current()?.album.name;
@@ -180,6 +185,7 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
   onMount(() => {
     player.addEventListener("play", () => {
       setState(PlaybackState.Playing);
+      player.volume = volume();
     });
     player.addEventListener("error", () => {
       stop();
@@ -187,7 +193,6 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
     player.addEventListener("timeupdate", () => {
       setDuration(player.duration);
       setPosition(player.currentTime);
-      setVolume(player.volume);
     });
     player.addEventListener("ended", () => {
       next(TrackEndType.Natural);

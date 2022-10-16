@@ -39,7 +39,18 @@ interface TransportButtonProps {
 interface SeekBarProps {
   percent: number;
   onChange?: (percent: number) => void;
+  extendedStyles?: string | string[];
 }
+
+const mergeExtendedStyles = (
+  baseStyle: string,
+  extendedStyles?: string | string[]
+) => {
+  return _.compact([
+    baseStyle,
+    ...(_.isArray(extendedStyles) ? extendedStyles : [extendedStyles]),
+  ]).join(" ");
+};
 
 const formatDuration = (seconds: number) => {
   if (!seconds) {
@@ -84,6 +95,8 @@ const handleDocumentKeyPress = (
 };
 
 const SeekBar: Component<SeekBarProps> = (props) => {
+  const mergedStyles = () =>
+    mergeExtendedStyles(styles.SeekBarContainer, props.extendedStyles);
   const handleClick = (ev: any) => {
     const percent = Math.round(
       (ev.offsetX / ev.currentTarget.clientWidth) * 100
@@ -91,7 +104,7 @@ const SeekBar: Component<SeekBarProps> = (props) => {
     props.onChange?.(percent);
   };
   return (
-    <div onClick={handleClick} class={styles.SeekBarContainer}>
+    <div onClick={handleClick} class={mergedStyles()}>
       <div class={styles.SeekBar} style={{ width: `${props.percent}%` }} />
     </div>
   );
@@ -141,16 +154,10 @@ const TrackView: Component<TrackViewProps> = (props) => {
 };
 
 const TransportButton: Component<TransportButtonProps> = (props) => {
-  const extendedStyles = () => {
-    return _.compact([
-      styles.TransportButton,
-      ...(_.isArray(props.extendedStyles)
-        ? props.extendedStyles
-        : [props.extendedStyles]),
-    ]).join(" ");
-  };
+  const mergeStyles = () =>
+    mergeExtendedStyles(styles.TransportButton, props.extendedStyles);
   return (
-    <div onClick={props.onClick} class={extendedStyles()}>
+    <div onClick={props.onClick} class={mergeStyles()}>
       {props.caption}
     </div>
   );
@@ -200,6 +207,19 @@ const RepeatModeButton: Component = () => {
         onClick={handleToggleRepeat}
         extendedStyles={styles.RepeatButton}
       />
+    </div>
+  );
+};
+
+const VolumeSeekBar: Component = () => {
+  const playback = useContext(PlaybackContext);
+  const currentVolume = () => (playback?.volume() || 1) * 100;
+  const handleChanged = (percent: number) => {
+    playback?.setVolume(percent / 100);
+  };
+  return (
+    <div class={styles.VolumeSeekBarContainer}>
+      <SeekBar percent={currentVolume()} onChange={handleChanged} />
     </div>
   );
 };
@@ -260,7 +280,9 @@ const TransportView: Component = () => {
         )}`}</div>
       </div>
       <div class={styles.TransportButtonContainer}>
-        <div class={styles.TransportButtonSpacer} />
+        <div class={styles.TransportButtonSpacer}>
+          <VolumeSeekBar />
+        </div>
         <TransportButton onClick={handlePrev} caption="prev" />
         <TransportButton
           onClick={handlePlayPause}
