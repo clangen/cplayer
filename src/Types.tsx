@@ -26,6 +26,18 @@ export enum ManifestState {
   Loaded = "loaded",
 }
 
+export enum RepeatMode {
+  None = "none",
+  Track = "track",
+  Album = "album",
+  All = "all",
+}
+
+export enum TrackEndType {
+  Manual = "manual",
+  Natural = "natural",
+}
+
 export interface CurrentTrack {
   album: Album;
   track: Track;
@@ -44,6 +56,9 @@ export interface Playback {
   duration: Accessor<number>;
   position: Accessor<number>;
   volume: Accessor<number>;
+  setVolume: (volume: number) => void;
+  repeatMode: Accessor<RepeatMode>;
+  setRepeatMode: (mode: RepeatMode) => void;
   play: (album: Album, index: number) => void;
   seekTo: (seconds: number) => void;
   pause: () => void;
