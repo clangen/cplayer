@@ -235,6 +235,10 @@
   align-items: center;
 }
 
+.RepeatButton {
+  font-size: 50%;
+}
+
 .SeekBarContainer {
   display: flex;
   flex: 1;

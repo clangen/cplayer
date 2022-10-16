@@ -33,6 +33,7 @@ interface AlbumViewProps {
 interface TransportButtonProps {
   onClick: () => void;
   caption: string;
+  extendedStyles?: string | string[];
 }
 
 interface SeekBarProps {
@@ -140,8 +141,16 @@ const TrackView: Component<TrackViewProps> = (props) => {
 };
 
 const TransportButton: Component<TransportButtonProps> = (props) => {
+  const extendedStyles = () => {
+    return _.compact([
+      styles.TransportButton,
+      ...(_.isArray(props.extendedStyles)
+        ? props.extendedStyles
+        : [props.extendedStyles]),
+    ]).join(" ");
+  };
   return (
-    <div onClick={props.onClick} class={styles.TransportButton}>
+    <div onClick={props.onClick} class={extendedStyles()}>
       {props.caption}
     </div>
   );
@@ -189,6 +198,7 @@ const RepeatModeButton: Component = () => {
       <TransportButton
         caption={`repeat ${playback?.repeatMode()}`}
         onClick={handleToggleRepeat}
+        extendedStyles={styles.RepeatButton}
       />
     </div>
   );
