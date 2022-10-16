@@ -14,6 +14,7 @@ import {
   Manifest,
   PlaybackState,
   ManifestState,
+  RepeatMode,
 } from "./Types";
 import { PlaybackContext } from "./PlaybackContext";
 import { ManifestContext } from "./ManifestContext";
@@ -175,6 +176,24 @@ const TransportTitle: Component = () => {
   );
 };
 
+const RepeatModeButton: Component = () => {
+  const playback = useContext(PlaybackContext);
+  const handleToggleRepeat = () => {
+    const ordering = _.values(RepeatMode);
+    const i = _.indexOf(ordering, playback?.repeatMode() ?? RepeatMode.None);
+    const rotated = ordering[(i + 1) % ordering.length];
+    playback?.setRepeatMode(rotated);
+  };
+  return (
+    <div class={styles.RepeatButtonContainer}>
+      <TransportButton
+        caption={`repeat ${playback?.repeatMode()}`}
+        onClick={handleToggleRepeat}
+      />
+    </div>
+  );
+};
+
 const TransportView: Component = () => {
   const manifest = useContext(ManifestContext);
   const albums = () => manifest?.albums() || [];
@@ -231,12 +250,16 @@ const TransportView: Component = () => {
         )}`}</div>
       </div>
       <div class={styles.TransportButtonContainer}>
+        <div class={styles.TransportButtonSpacer} />
         <TransportButton onClick={handlePrev} caption="prev" />
         <TransportButton
           onClick={handlePlayPause}
           caption={playPauseCaption()}
         />
         <TransportButton onClick={handleNext} caption="next" />
+        <div class={styles.TransportButtonSpacer}>
+          <RepeatModeButton />
+        </div>
       </div>
     </div>
   );

@@ -173,6 +173,10 @@
   cursor: pointer;
 }
 
+.TransportButton :last {
+  margin-right: 0;
+}
+
 .TransportTimeContainer {
   display: flex;
   flex-direction: row;
@@ -181,9 +185,16 @@
   align-items: center;
 }
 
+.TransportButtonSpacer {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
 .TransportButtonContainer {
   display: flex;
   flex-direction: row;
+  width: 100%;
 }
 
 .TransportButton:hover {
@@ -215,6 +226,13 @@
   font-family: "monospace";
   font-size: 85%;
   font-weight: bold;
+}
+
+.RepeatButtonContainer {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .SeekBarContainer {
