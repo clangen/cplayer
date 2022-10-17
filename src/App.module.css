@@ -241,10 +241,21 @@
   flex: 1;
   justify-content: flex-start;
   align-items: center;
+  font-size: 75%;
+}
+
+.VolumeSeekBar {
+  max-width: 50%;
 }
 
 .RepeatButton {
-  font-size: 50%;
+  font-size: 75%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border-radius: 4px;
+  margin-right: 0;
 }
 
 .SeekBarContainer {
@@ -262,7 +273,7 @@
   height: 100%;
   width: 100%;
   background-color: var(--color-dark-blue);
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 .Flex1 {

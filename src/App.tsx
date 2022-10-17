@@ -219,7 +219,12 @@ const VolumeSeekBar: Component = () => {
   };
   return (
     <div class={styles.VolumeSeekBarContainer}>
-      <SeekBar percent={currentVolume()} onChange={handleChanged} />
+      <div>volume</div>
+      <SeekBar
+        percent={currentVolume()}
+        onChange={handleChanged}
+        extendedStyles={[styles.VolumeSeekBar]}
+      />
     </div>
   );
 };
