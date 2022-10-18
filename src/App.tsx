@@ -4,13 +4,23 @@ import {
   Show,
   useContext,
   createEffect,
+  createSignal,
   onMount,
   onCleanup,
 } from "solid-js";
-import { Track, Album, Playback, Manifest, PlaybackState } from "./Types";
+import {
+  Track,
+  Album,
+  Playback,
+  Manifest,
+  PlaybackState,
+  ManifestState,
+  RepeatMode,
+} from "./Types";
 import { PlaybackContext } from "./PlaybackContext";
 import { ManifestContext } from "./ManifestContext";
 import styles from "./App.module.css";
+import { DOMElement } from "solid-js/jsx-runtime";
 
 interface TrackViewProps {
   album: Album;
@@ -25,12 +35,24 @@ interface AlbumViewProps {
 interface TransportButtonProps {
   onClick: () => void;
   caption: string;
+  extendedStyles?: string | string[];
 }
 
 interface SeekBarProps {
   percent: number;
   onChange?: (percent: number) => void;
+  extendedStyles?: string | string[];
 }
+
+const mergeExtendedStyles = (
+  baseStyle: string,
+  extendedStyles?: string | string[]
+) => {
+  return _.compact([
+    baseStyle,
+    ...(_.isArray(extendedStyles) ? extendedStyles : [extendedStyles]),
+  ]).join(" ");
+};
 
 const formatDuration = (seconds: number) => {
   if (!seconds) {
@@ -74,16 +96,55 @@ const handleDocumentKeyPress = (
   }
 };
 
+const clamp = (val: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, val));
+
 const SeekBar: Component<SeekBarProps> = (props) => {
-  const handleClick = (ev: any) => {
-    const percent = Math.round(
-      (ev.offsetX / ev.currentTarget.clientWidth) * 100
-    );
-    props.onChange?.(percent);
+  const mergedStyles = () =>
+    mergeExtendedStyles(styles.SeekBarContainer, props.extendedStyles);
+  let elementRef: HTMLDivElement | undefined;
+  const [mouseMoveX, setMouseMoveX] = createSignal<number | undefined>(
+    undefined
+  );
+  const percent = () => {
+    const x = mouseMoveX() ?? -1;
+    if (elementRef && x >= 0) {
+      const relX = x - elementRef.offsetLeft;
+      const width = elementRef.clientWidth;
+      const percent = clamp((relX / width) * 100, 0, 100);
+      return percent;
+    }
+    return props.percent;
   };
+  const handleDocumentMouseUp = (ev: any) => {
+    const x = mouseMoveX() ?? -1;
+    if (elementRef && x >= 0) {
+      props.onChange?.(percent());
+    }
+    setMouseMoveX(undefined);
+  };
+  const handleMouseDown = (ev: any) => {
+    if (ev.button === 0) {
+      setMouseMoveX(ev.screenX);
+    }
+  };
+  const handleMouseMove = (ev: any) => {
+    const x = mouseMoveX() ?? -1;
+    if (x >= 0 && elementRef) {
+      setMouseMoveX(ev.screenX);
+    }
+  };
+  onMount(() => {
+    document.addEventListener("mouseup", handleDocumentMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+  });
+  onCleanup(() => {
+    document.removeEventListener("mouseup", handleDocumentMouseUp);
+    document.removeEventListener("mousemove", handleMouseMove);
+  });
   return (
-    <div onClick={handleClick} class={styles.SeekBarContainer}>
-      <div class={styles.SeekBar} style={{ width: `${props.percent}%` }} />
+    <div ref={elementRef} onMouseDown={handleMouseDown} class={mergedStyles()}>
+      <div class={styles.SeekBar} style={{ width: `${percent()}%` }} />
     </div>
   );
 };
@@ -114,8 +175,13 @@ const TrackView: Component<TrackViewProps> = (props) => {
       <div class={styles.TrackNumber}>
         <div>{props.index + 1}</div>
       </div>
-      <div>
-        <div class={styles.TrackTitle}>{props.track.title}</div>
+      <div class={styles.Flex1}>
+        <div class={styles.TrackTitleRow}>
+          <div class={styles.TrackTitle}>{props.track.title}</div>
+          {props.track.tags.map((tag) => (
+            <div class={styles.TrackTag}>{tag}</div>
+          ))}
+        </div>
         <Show when={showDownloadButton()}>
           <a class={styles.TrackUri} href={props.track.uri}>
             download
@@ -127,8 +193,10 @@ const TrackView: Component<TrackViewProps> = (props) => {
 };
 
 const TransportButton: Component<TransportButtonProps> = (props) => {
+  const mergeStyles = () =>
+    mergeExtendedStyles(styles.TransportButton, props.extendedStyles);
   return (
-    <div onClick={props.onClick} class={styles.TransportButton}>
+    <div onClick={props.onClick} class={mergeStyles()}>
       {props.caption}
     </div>
   );
@@ -159,6 +227,43 @@ const TransportTitle: Component = () => {
         <div class={styles.TransportTrackSeparator}>from</div>
         <div class={styles.TransportTrackMetadata}>{album()}</div>
       </Show>
+    </div>
+  );
+};
+
+const RepeatModeButton: Component = () => {
+  const playback = useContext(PlaybackContext);
+  const handleToggleRepeat = () => {
+    const ordering = _.values(RepeatMode);
+    const i = _.indexOf(ordering, playback?.repeatMode() ?? RepeatMode.None);
+    const rotated = ordering[(i + 1) % ordering.length];
+    playback?.setRepeatMode(rotated);
+  };
+  return (
+    <div class={styles.RepeatButtonContainer}>
+      <TransportButton
+        caption={`repeat ${playback?.repeatMode()}`}
+        onClick={handleToggleRepeat}
+        extendedStyles={styles.RepeatButton}
+      />
+    </div>
+  );
+};
+
+const VolumeSeekBar: Component = () => {
+  const playback = useContext(PlaybackContext);
+  const currentVolume = () => (playback?.volume() || 1) * 100;
+  const handleChanged = (percent: number) => {
+    playback?.setVolume(percent / 100);
+  };
+  return (
+    <div class={styles.VolumeSeekBarContainer}>
+      <div>volume</div>
+      <SeekBar
+        percent={currentVolume()}
+        onChange={handleChanged}
+        extendedStyles={[styles.VolumeSeekBar]}
+      />
     </div>
   );
 };
@@ -219,12 +324,18 @@ const TransportView: Component = () => {
         )}`}</div>
       </div>
       <div class={styles.TransportButtonContainer}>
+        <div class={styles.TransportButtonSpacer}>
+          <VolumeSeekBar />
+        </div>
         <TransportButton onClick={handlePrev} caption="prev" />
         <TransportButton
           onClick={handlePlayPause}
           caption={playPauseCaption()}
         />
         <TransportButton onClick={handleNext} caption="next" />
+        <div class={styles.TransportButtonSpacer}>
+          <RepeatModeButton />
+        </div>
       </div>
     </div>
   );
@@ -251,7 +362,11 @@ const App: Component = () => {
   const playback = useContext(PlaybackContext);
   const manifest = useContext(ManifestContext);
 
-  const manifestLoaded = () => manifest?.albums().length;
+  const manifestError = () =>
+    manifest?.state() === ManifestState.Invalid ||
+    manifest?.state() === ManifestState.Missing;
+
+  const manifestLoaded = () => manifest?.state() === ManifestState.Loaded;
 
   const handleKeyPress = (ev: any) =>
     handleDocumentKeyPress(ev, manifest!, playback!);
@@ -265,8 +380,8 @@ const App: Component = () => {
   }, [manifest?.config]);
 
   return (
-    <Show when={manifestLoaded()}>
-      <div class={styles.App}>
+    <div class={styles.App}>
+      <Show when={manifestLoaded()}>
         <div class={styles.MainContent}>
           <div class={styles.AlbumList}>
             {_.map(manifest?.albums(), (album) => (
@@ -275,8 +390,11 @@ const App: Component = () => {
           </div>
           <TransportView />
         </div>
-      </div>
-    </Show>
+      </Show>
+      <Show when={manifestError()}>
+        <div>invalid, corrupted, or empty manifest file!</div>
+      </Show>
+    </div>
   );
 };
 

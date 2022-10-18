@@ -1,3 +1,24 @@
+:root {
+  --color-light: #d5c4a1;
+  --color-lighter: #ebdbb2;
+  --color-lightest: #fbf1c7;
+  --color-darkest: #282828;
+  --color-light-blue: #83a598;
+  --color-dark-blue: #458588;
+  --color-light-orange: #fe8019;
+  --color-dark-orange: #d65d03;
+  --color-light-cyan: #8ec07c;
+  --color-dark-cyan: #689d6a;
+  --color-light-green: #b8bb26;
+  --color-dark-green: #98971a;
+  --color-light-purple: #d3869b;
+  --color-dark-purple: #b16286;
+  --color-light-yellow: #fabd2f;
+  --color-dark-yellow: #d79921;
+  --color-light-red: #fb4934;
+  --color-dark-red: #cc241d;
+}
+
 .App {
   user-select: none;
   position: absolute;
@@ -12,7 +33,7 @@
 }
 
 .MainContent {
-  background-color: #282828;
+  background-color: var(--color-darkest);
   display: flex;
   flex-direction: column;
   display: flex;
@@ -43,8 +64,8 @@
 }
 
 .AlbumTitleContainer {
-  background-color: #458588;
-  color: #fbf1c7;
+  background-color: var(--color-dark-blue);
+  color: var(--color-lightest);
   padding: 8px;
   border-radius: 8px 8px 0px 0px;
   flex-direction: row;
@@ -67,12 +88,12 @@
   padding: 6px;
   border: 2px solid transparent;
   cursor: pointer;
-  color: #282828;
-  background-color: #ebdbb2;
+  color: var(--color-darkest);
+  background-color: var(--color-lighter);
 }
 
 .AlbumTrack:hover {
-  background-color: #d5c4a1;
+  background-color: var(--color-light);
 }
 
 .AlbumTrack:last-child {
@@ -80,8 +101,8 @@
 }
 
 .AlbumTrackPlaying {
-  background-color: #fbf1c7;
-  border: 2px solid #8ec07c;
+  background-color: var(--color-lightest);
+  border: 2px solid var(--color-light-cyan);
 }
 
 .TrackNumber {
@@ -90,7 +111,7 @@
   width: 36px;
   height: 36px;
   text-align: center;
-  background-color: #d5c4a1;
+  background-color: var(--color-light);
   align-self: center;
   align-content: center;
   justify-content: center;
@@ -100,6 +121,29 @@
 .TrackTitle {
   font-weight: bold;
   font-size: 90%;
+  flex: 1;
+}
+
+.TrackTitleRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.TrackTitleRow div {
+  margin-right: 4px;
+}
+
+.TrackTag {
+  font-size: 65%;
+  padding: 2px;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-radius: 8px;
+  background-color: var(--color-light-orange);
+  border: 1px solid var(--color-dark-orange);
+  text-align: center;
+  justify-items: center;
+  min-width: 32px;
 }
 
 .TrackUri {
@@ -107,9 +151,9 @@
 }
 
 .Transport {
-  background-color: #b8bb26;
+  background-color: var(--color-light-green);
   border-radius: 8px;
-  color: #282828;
+  color: var(--color-darkest);
   padding: 8px;
   display: flex;
   flex-direction: column;
@@ -118,8 +162,8 @@
 
 .TransportButton {
   box-sizing: border-box;
-  background-color: #ebdbb2;
-  border: 1px solid #458588;
+  background-color: var(--color-lighter);
+  border: 1px solid var(--color-dark-blue);
   padding-left: 16px;
   padding-right: 16px;
   padding-top: 4px;
@@ -129,21 +173,33 @@
   cursor: pointer;
 }
 
+.TransportButton :last {
+  margin-right: 0;
+}
+
 .TransportTimeContainer {
   display: flex;
   flex-direction: row;
   width: 100%;
+  margin-bottom: 4px;
   justify-content: center;
   align-items: center;
+}
+
+.TransportButtonSpacer {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
 }
 
 .TransportButtonContainer {
   display: flex;
   flex-direction: row;
+  width: 100%;
 }
 
 .TransportButton:hover {
-  background-color: #fbf1c7;
+  background-color: var(--color-lightest);
 }
 
 .TransportTrackTitle {
@@ -173,14 +229,42 @@
   font-weight: bold;
 }
 
+.RepeatButtonContainer {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.VolumeSeekBarContainer {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 75%;
+}
+
+.VolumeSeekBar {
+  max-width: 50%;
+}
+
+.RepeatButton {
+  font-size: 75%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
 .SeekBarContainer {
   display: flex;
   flex: 1;
-  height: 16px;
-  border: 1px solid #458588;
+  height: 8px;
+  border: 1px solid var(--color-dark-blue);
   margin-left: 8px;
   margin-right: 8px;
-  margin-bottom: 4px;
   padding: 2px;
   border-radius: 4px;
 }
@@ -188,6 +272,10 @@
 .SeekBar {
   height: 100%;
   width: 100%;
-  background-color: #458588;
+  background-color: var(--color-dark-blue);
   border-radius: 4px;
+}
+
+.Flex1 {
+  flex: 1;
 }

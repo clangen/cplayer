@@ -7,7 +7,14 @@ import {
   useContext,
 } from "solid-js";
 import { ManifestContext } from "./ManifestContext";
-import { Playback, PlaybackState, Album, CurrentTrack } from "./Types";
+import {
+  Playback,
+  PlaybackState,
+  Album,
+  CurrentTrack,
+  TrackEndType,
+  RepeatMode,
+} from "./Types";
 
 export const PlaybackContext = createContext<Playback>();
 
@@ -22,8 +29,14 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
   const [current, setCurrent] = createSignal<CurrentTrack | undefined>();
   const [duration, setDuration] = createSignal(0);
   const [position, setPosition] = createSignal(0);
-  const [volume, setVolume] = createSignal(0);
+  const [volume, setVolumeInternal] = createSignal(1.0);
+  const [repeatMode, setRepeatMode] = createSignal(RepeatMode.None);
   const manifest = useContext(ManifestContext);
+
+  const setVolume = (updatedVolume: number) => {
+    player.volume = updatedVolume;
+    setVolumeInternal(player.volume);
+  };
 
   const getAdjacentAlbum = (offset: number) => {
     const currentAlbum = current()?.album.name;
@@ -74,15 +87,35 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
     player.pause();
   };
 
-  const next = () => {
+  const next = (endType: TrackEndType = TrackEndType.Manual) => {
     const playing = current();
-    if (playing) {
-      const album = playing.album;
-      const nextIndex = playing.index + 1;
-      if (nextIndex < playing.album.tracks.length) {
-        play(album, nextIndex);
+    if (playing && manifest) {
+      const repeatTrack =
+        endType === TrackEndType.Natural && repeatMode() === RepeatMode.Track;
+      if (repeatTrack) {
+        play(playing?.album, playing?.index);
       } else {
-        playNextAlbum();
+        const albums = manifest?.albums();
+        const nextIndex = playing.index + 1;
+        const playNextInAlbum = nextIndex < playing.album.tracks.length;
+        const album = playing.album;
+        const isLastTrackInAlbum =
+          playing?.album.tracks.length - 1 === playing?.index;
+        const restartAlbum =
+          repeatMode() === RepeatMode.Album && isLastTrackInAlbum;
+        const restartAll =
+          repeatMode() === RepeatMode.All &&
+          playing?.album === albums[albums.length - 1] &&
+          isLastTrackInAlbum;
+        if (playNextInAlbum) {
+          play(album, nextIndex);
+        } else if (restartAll) {
+          play(albums[0], 0);
+        } else if (restartAlbum) {
+          play(album, 0);
+        } else {
+          playNextAlbum();
+        }
       }
     }
   };
@@ -94,11 +127,27 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
         play(playing.album, playing.index);
       } else {
         const album = playing.album;
+        const albums = manifest?.albums() || [];
         const preIndex = playing.index - 1;
-        if (preIndex >= 0) {
+        const isFirstAlbum = album === albums[0];
+        const playEndOfAlbum =
+          repeatMode() === RepeatMode.Album && playing.index === 0;
+        const playEndOfList = repeatMode() === RepeatMode.All && isFirstAlbum;
+        if (playEndOfAlbum) {
+          play(album, album.tracks.length - 1);
+        } else if (playEndOfList) {
+          if (albums.length) {
+            const lastAlbum = albums[albums.length - 1];
+            play(lastAlbum, lastAlbum.tracks.length - 1);
+          }
+        } else if (preIndex >= 0) {
           play(album, preIndex);
         } else {
-          playPrevAlbum();
+          if (isFirstAlbum) {
+            play(album, playing.index);
+          } else {
+            playPrevAlbum();
+          }
         }
       }
     }
@@ -121,6 +170,9 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
     position,
     duration,
     volume,
+    setVolume,
+    repeatMode,
+    setRepeatMode,
     play,
     seekTo,
     pause,
@@ -133,6 +185,7 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
   onMount(() => {
     player.addEventListener("play", () => {
       setState(PlaybackState.Playing);
+      player.volume = volume();
     });
     player.addEventListener("error", () => {
       stop();
@@ -140,10 +193,9 @@ export const PlaybackProvider: Component<PlaybackProviderProps> = (props) => {
     player.addEventListener("timeupdate", () => {
       setDuration(player.duration);
       setPosition(player.currentTime);
-      setVolume(player.volume);
     });
     player.addEventListener("ended", () => {
-      next();
+      next(TrackEndType.Natural);
     });
   });
 
