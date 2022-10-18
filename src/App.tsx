@@ -4,6 +4,7 @@ import {
   Show,
   useContext,
   createEffect,
+  createSignal,
   onMount,
   onCleanup,
 } from "solid-js";
@@ -19,6 +20,7 @@ import {
 import { PlaybackContext } from "./PlaybackContext";
 import { ManifestContext } from "./ManifestContext";
 import styles from "./App.module.css";
+import { DOMElement } from "solid-js/jsx-runtime";
 
 interface TrackViewProps {
   album: Album;
@@ -94,18 +96,55 @@ const handleDocumentKeyPress = (
   }
 };
 
+const clamp = (val: number, min: number, max: number) =>
+  Math.max(min, Math.min(max, val));
+
 const SeekBar: Component<SeekBarProps> = (props) => {
   const mergedStyles = () =>
     mergeExtendedStyles(styles.SeekBarContainer, props.extendedStyles);
-  const handleClick = (ev: any) => {
-    const percent = Math.round(
-      (ev.offsetX / ev.currentTarget.clientWidth) * 100
-    );
-    props.onChange?.(percent);
+  let elementRef: HTMLDivElement | undefined;
+  const [mouseMoveX, setMouseMoveX] = createSignal<number | undefined>(
+    undefined
+  );
+  const percent = () => {
+    const x = mouseMoveX() ?? -1;
+    if (elementRef && x >= 0) {
+      const relX = x - elementRef.offsetLeft;
+      const width = elementRef.clientWidth;
+      const percent = clamp((relX / width) * 100, 0, 100);
+      return percent;
+    }
+    return props.percent;
   };
+  const handleDocumentMouseUp = (ev: any) => {
+    const x = mouseMoveX() ?? -1;
+    if (elementRef && x >= 0) {
+      props.onChange?.(percent());
+    }
+    setMouseMoveX(undefined);
+  };
+  const handleMouseDown = (ev: any) => {
+    if (ev.button === 0) {
+      setMouseMoveX(ev.screenX);
+    }
+  };
+  const handleMouseMove = (ev: any) => {
+    const x = mouseMoveX() ?? -1;
+    if (x >= 0 && elementRef) {
+      setMouseMoveX(ev.screenX);
+    }
+  };
+  onMount(() => {
+    document.addEventListener("mouseup", handleDocumentMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+  });
+  onCleanup(() => {
+    document.removeEventListener("mouseup", handleDocumentMouseUp);
+    document.removeEventListener("mousemove", handleMouseMove);
+  });
   return (
-    <div onClick={handleClick} class={mergedStyles()}>
-      <div class={styles.SeekBar} style={{ width: `${props.percent}%` }} />
+    <div ref={elementRef} onMouseDown={handleMouseDown} class={mergedStyles()}>
+      <div class={styles.SeekBar} style={{ width: `${percent()}%` }} />
     </div>
   );
 };
