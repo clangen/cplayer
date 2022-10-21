@@ -197,7 +197,7 @@ const TransportButton: Component<TransportButtonProps> = (props) => {
     mergeExtendedStyles(styles.TransportButton, props.extendedStyles);
   return (
     <div onClick={props.onClick} class={mergeStyles()}>
-      {props.caption}
+      <div class={styles.TransportButtonInner}>{props.caption}</div>
     </div>
   );
 };
@@ -311,6 +311,10 @@ const TransportView: Component = () => {
       playback?.seekTo(pos);
     }
   };
+  const volumeSeekBarStyle = [
+    styles.HideIfTooSmall,
+    styles.TransportButtonSpacer,
+  ].join(" ");
   return (
     <div class={styles.Transport}>
       <TransportTitle />
@@ -324,15 +328,17 @@ const TransportView: Component = () => {
         )}`}</div>
       </div>
       <div class={styles.TransportButtonContainer}>
-        <div class={styles.TransportButtonSpacer}>
+        <div class={volumeSeekBarStyle}>
           <VolumeSeekBar />
         </div>
-        <TransportButton onClick={handlePrev} caption="prev" />
-        <TransportButton
-          onClick={handlePlayPause}
-          caption={playPauseCaption()}
-        />
-        <TransportButton onClick={handleNext} caption="next" />
+        <div class={styles.TransportNavigationButtonContainer}>
+          <TransportButton onClick={handlePrev} caption="prev" />
+          <TransportButton
+            onClick={handlePlayPause}
+            caption={playPauseCaption()}
+          />
+          <TransportButton onClick={handleNext} caption="next" />
+        </div>
         <div class={styles.TransportButtonSpacer}>
           <RepeatModeButton />
         </div>

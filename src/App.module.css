@@ -171,6 +171,13 @@
   border-radius: 4px;
   margin-right: 8px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.TransportButtonInner {
+  text-align: center;
 }
 
 .TransportButton :last {
@@ -202,6 +209,10 @@
   background-color: var(--color-lightest);
 }
 
+.TransportNavigationButtonContainer {
+  display: flex;
+}
+
 .TransportTrackTitle {
   margin-bottom: 4px;
   display: flex;
@@ -227,6 +238,21 @@
   font-family: "monospace";
   font-size: 85%;
   font-weight: bold;
+}
+
+@media screen and (max-width: 532px) {
+  .HideIfTooSmall {
+    display: none;
+  }
+
+  .TransportNavigationButtonContainer {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .TransportButtonSpacer {
+    flex: unset;
+  }
 }
 
 .RepeatButtonContainer {
