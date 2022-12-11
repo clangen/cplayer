@@ -20,7 +20,6 @@ import {
 import { PlaybackContext } from "./PlaybackContext";
 import { ManifestContext } from "./ManifestContext";
 import styles from "./App.module.css";
-import { DOMElement } from "solid-js/jsx-runtime";
 
 interface TrackViewProps {
   album: Album;

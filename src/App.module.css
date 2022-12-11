@@ -17,6 +17,15 @@
   --color-dark-yellow: #d79921;
   --color-light-red: #fb4934;
   --color-dark-red: #cc241d;
+
+  --border-radius-large: 8px;
+  --border-radius-medium: 4px;
+  --border-radius-small: 2px;
+
+  --spacing-xlarge: 16px;
+  --spacing-large: 8px;
+  --spacing-medium: 4px;
+  --spacing-small: 2px;
 }
 
 .App {
@@ -26,7 +35,7 @@
   right: 0;
   top: 0;
   bottom: 0;
-  padding: 8px;
+  padding: var(--spacing-large);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -39,7 +48,7 @@
   display: flex;
   flex: 1;
   height: 100%;
-  border-radius: 8px;
+  border-radius: var(--border-radius-large);
   max-width: 680px;
 }
 
@@ -49,25 +58,25 @@
 }
 
 .Album:first-child {
-  margin-top: 8px;
+  margin-top: var(--spacing-large);
 }
 
 .Album:last-child {
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-large);
 }
 
 .Album {
-  padding: 4px;
-  margin: 8px;
-  margin-top: 4px;
-  margin-bottom: 4px;
+  padding: var(--spacing-medium);
+  margin: var(--spacing-large);
+  margin-top: var(--spacing-medium);
+  margin-bottom: var(--spacing-medium);
 }
 
 .AlbumTitleContainer {
   background-color: var(--color-dark-blue);
   color: var(--color-lightest);
-  padding: 8px;
-  border-radius: 8px 8px 0px 0px;
+  padding: var(--spacing-large);
+  border-radius: var(--border-radius-large) var(--border-radius-large) 0px 0px;
   flex-direction: row;
   display: flex;
 }
@@ -78,14 +87,14 @@
 }
 
 .AlbumTitleContainer div {
-  margin-right: 4px;
+  margin-right: var(--spacing-medium);
 }
 
 .AlbumTrack {
   display: flex;
   flex-direction: row;
   box-sizing: border-box;
-  padding: 6px;
+  padding: var(--spacing-medium);
   border: 2px solid transparent;
   cursor: pointer;
   color: var(--color-darkest);
@@ -97,7 +106,7 @@
 }
 
 .AlbumTrack:last-child {
-  border-radius: 0px 0px 8px 8px;
+  border-radius: 0px 0px var(--border-radius-large) var(--border-radius-large);
 }
 
 .AlbumTrackPlaying {
@@ -115,7 +124,7 @@
   align-self: center;
   align-content: center;
   justify-content: center;
-  margin-right: 8px;
+  margin-right: var(--spacing-large);
 }
 
 .TrackTitle {
@@ -130,15 +139,15 @@
 }
 
 .TrackTitleRow div {
-  margin-right: 4px;
+  margin-right: var(--spacing-medium);
 }
 
 .TrackTag {
   font-size: 65%;
-  padding: 2px;
-  padding-left: 8px;
-  padding-right: 8px;
-  border-radius: 8px;
+  padding: var(--spacing-small);
+  padding-left: var(--spacing-large);
+  padding-right: var(--spacing-large);
+  border-radius: var(--border-radius-large);
   background-color: var(--color-light-orange);
   border: 1px solid var(--color-dark-orange);
   text-align: center;
@@ -152,9 +161,9 @@
 
 .Transport {
   background-color: var(--color-light-green);
-  border-radius: 8px;
+  border-radius: var(--border-radius-large);
   color: var(--color-darkest);
-  padding: 8px;
+  padding: var(--spacing-large);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -164,12 +173,12 @@
   box-sizing: border-box;
   background-color: var(--color-lighter);
   border: 1px solid var(--color-dark-blue);
-  padding-left: 16px;
-  padding-right: 16px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-radius: 4px;
-  margin-right: 8px;
+  padding-left: var(--spacing-xlarge);
+  padding-right: var(--spacing-xlarge);
+  padding-top: var(--spacing-medium);
+  padding-bottom: var(--spacing-medium);
+  border-radius: var(--border-radius-medium);
+  margin-right: var(--spacing-large);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -188,7 +197,7 @@
   display: flex;
   flex-direction: row;
   width: 100%;
-  margin-bottom: 4px;
+  margin-bottom: var(--spacing-medium);
   justify-content: center;
   align-items: center;
 }
@@ -214,7 +223,7 @@
 }
 
 .TransportTrackTitle {
-  margin-bottom: 4px;
+  margin-bottom: var(--spacing-medium);
   display: flex;
   flex-direction: row;
   align-items: baseline;
@@ -223,7 +232,7 @@
 }
 
 .TransportTrackTitle div {
-  margin-right: 4px;
+  margin-right: var(--spacing-medium);
 }
 
 .TransportTrackSeparator {
@@ -276,12 +285,12 @@
 
 .RepeatButton {
   font-size: 75%;
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  border-radius: 4px;
-  margin-right: 8px;
+  padding-left: var(--spacing-medium);
+  padding-right: var(--spacing-medium);
+  padding-top: var(--spacing-small);
+  padding-bottom: var(--spacing-small);
+  border-radius: var(--border-radius-medium);
+  margin-right: var(--spacing-large);
 }
 
 .SeekBarContainer {
@@ -289,17 +298,17 @@
   flex: 1;
   height: 8px;
   border: 1px solid var(--color-dark-blue);
-  margin-left: 8px;
-  margin-right: 8px;
-  padding: 2px;
-  border-radius: 4px;
+  margin-left: var(--spacing-large);
+  margin-right: var(--spacing-large);
+  padding: var(--spacing-small);
+  border-radius: var(--border-radius-medium);
 }
 
 .SeekBar {
   height: 100%;
   width: 100%;
   background-color: var(--color-dark-blue);
-  border-radius: 4px;
+  border-radius: var(--border-radius-medium);
 }
 
 .Flex1 {
